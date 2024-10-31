@@ -19,7 +19,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Build AAR
-        run: ./gradlew aR
+        run: gradle aR
 
   publish:
     name: Publish to Github Packages
