@@ -1,4 +1,4 @@
-group "io.shuttle.flujs"
+group "cn.humphreyd.flujs"
 version "0.6.1"
 
 buildscript {
@@ -24,7 +24,7 @@ apply plugin: "maven-publish"
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace = "io.shuttle.flujs"
+        namespace = "cn.humphreyd.flujs"
     }
     compileSdkVersion 31
     ndkVersion = android.ndkVersion
@@ -44,16 +44,57 @@ android {
         arm.jniLibs.srcDirs += "src/arm/jniLibs"
         x86.jniLibs.srcDirs += "src/x86/jniLibs"
     }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "quickjs"
-            url = "https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs"
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                group = "cn.humphreyd.flujs"
+                artifactId = "quickjs"
+                version = "0.6.1"
+                pom {
+                    name = "quickjs"
+                    description = "quickjs"
+                    url = "https://github.com/flutter-flujs/flujs_android_quickjs.git"
+                    licenses {
+                        license {
+                            name = "The Apache License, Version 2.0"
+                            url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "ShuttleSpace"
+                            name = "ShuttleSpace"
+                        }
+                    }
+                    scm {
+                        connection = "https://github.com/flutter-flujs/flujs_android_quickjs/issues"
+                        developerConnection = "https://github.com/flutter-flujs/flujs_android_quickjs.git"
+                        url = "https://github.com/flutter-flujs/flujs_android_quickjs"
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "quickjs"
+                url = "https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs"
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
             }
         }
     }
