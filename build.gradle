@@ -56,8 +56,8 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.release
-                
+                from components.findByName('release')
+
                 groupId = "cn.humphreyd.flujs"
                 artifactId = "quickjs"
                 version = "0.6.1"
