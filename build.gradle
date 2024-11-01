@@ -45,7 +45,7 @@ android {
         x86.jniLibs.srcDirs += "src/x86/jniLibs"
     }
     publishing {
-        singleVariant('release') {
+        singleVariant("release") {
             withSourcesJar()
             withJavadocJar()
         }
@@ -56,7 +56,7 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.findByName('release')
+                from components.findByName("release")
 
                 groupId = "cn.humphreyd.flujs"
                 artifactId = "quickjs"
