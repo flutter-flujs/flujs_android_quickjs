@@ -52,38 +52,44 @@ android {
     }
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = "cn.humphreyd.flujs"
-            artifactId = "quickjs"
-            version = "0.6.1"
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                
+                groupId = "cn.humphreyd.flujs"
+                artifactId = "quickjs"
+                version = "0.6.1"
 
-            pom {
-                name = "quickjs"
-                description = "quickjs-ng for flujs."
-                url = "https://github.com/flutter-flujs/flujs_android_quickjs"
-                licenses {
-                    license {
-                        name = "The Apache License, Version 2.0"
-                        url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                    }
-                }
-                developers {
-                    developer {
-                        id = "dang8080@qq.com"
-                        name = "ShuttleSpace"
-                        email = "dang8080@qq.com"
-                    }
-                }
-                scm {
-                    connection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
-                    developerConnection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
+                pom {
+                    name = "quickjs"
+                    description = "quickjs-ng for flujs."
                     url = "https://github.com/flutter-flujs/flujs_android_quickjs"
+                    licenses {
+                        license {
+                            name = "The Apache License, Version 2.0"
+                            url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "dang8080@qq.com"
+                            name = "ShuttleSpace"
+                            email = "dang8080@qq.com"
+                        }
+                    }
+                    scm {
+                        connection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
+                        developerConnection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
+                        url = "https://github.com/flutter-flujs/flujs_android_quickjs"
+                    }
                 }
             }
         }
     }
+}
+publishing {
     repositories {
         maven {
             name = "quickjs"
