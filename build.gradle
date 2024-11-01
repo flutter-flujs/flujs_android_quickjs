@@ -21,6 +21,7 @@ rootProject.allprojects {
 
 apply plugin: "com.android.library"
 apply plugin: "maven-publish"
+apply plugin: "org.jreleaser"
 
 android {
     if (project.android.hasProperty("namespace")) {
@@ -53,47 +54,63 @@ android {
 }
 
 publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = "cn.humphreyd.flujs"
+            artifactId = "quickjs"
+            version = "0.6.1"
 
-}
+            from components.java
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                group = "cn.humphreyd.flujs"
-                artifactId = "quickjs"
-                version = "0.6.1"
-                pom {
-                    name = "quickjs"
-                    description = "quickjs"
-                    url = "https://github.com/flutter-flujs/flujs_android_quickjs.git"
-                    licenses {
-                        license {
-                            name = "The Apache License, Version 2.0"
-                            url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                        }
+            pom {
+                name = "quickjs"
+                description = "quickjs-ng for flujs."
+                url = "https://github.com/flutter-flujs/flujs_android_quickjs"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
                     }
-                    developers {
-                        developer {
-                            id = "ShuttleSpace"
-                            name = "ShuttleSpace"
-                        }
+                }
+                developers {
+                    developer {
+                        id = "dang8080@qq.com"
+                        name = "ShuttleSpace"
+                        email = "dang8080@qq.com"
                     }
-                    scm {
-                        connection = "https://github.com/flutter-flujs/flujs_android_quickjs/issues"
-                        developerConnection = "https://github.com/flutter-flujs/flujs_android_quickjs.git"
-                        url = "https://github.com/flutter-flujs/flujs_android_quickjs"
-                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
+                    developerConnection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
+                    url = "https://github.com/flutter-flujs/flujs_android_quickjs"
                 }
             }
         }
-        repositories {
-            maven {
-                name = "quickjs"
-                url = "https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs"
-                credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
+    }
+    repositories {
+        maven {
+            name = "quickjs"
+            url = uri("https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+jreleaser {
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('target/staging-deploy')
                 }
             }
         }
