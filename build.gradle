@@ -1,14 +1,25 @@
-group "cn.humphreyd.flujs"
-version "0.6.1"
+import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+
+def Prop(name) {
+    return project.providers.gradleProperty(name)
+}
+
+group Prop("GROUP")
+version Prop("VERSION_NAME")
 
 buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.0"
+        classpath "com.android.tools.build:gradle:8.0.0"
+        classpath "com.vanniktech:gradle-maven-publish-plugin:0.30.0"
     }
 }
 
@@ -21,6 +32,7 @@ rootProject.allprojects {
 
 apply plugin: "com.android.library"
 apply plugin: "maven-publish"
+apply plugin: "com.vanniktech.maven.publish.base"
 
 android {
     if (project.android.hasProperty("namespace")) {
@@ -29,75 +41,81 @@ android {
     compileSdkVersion 31
     ndkVersion = android.ndkVersion
     defaultConfig {
+        aarMetadata {
+            minCompileSdk = 16
+        }
         minSdk = 16
     }
-    flavorDimensions "abi"
-    productFlavors {
-        x86 {
-            dimension "abi"
-        }
-        arm {
-            dimension "abi"
-        }
-    }
     sourceSets {
-        arm.jniLibs.srcDirs += "src/arm/jniLibs"
-        x86.jniLibs.srcDirs += "src/x86/jniLibs"
+        main.jniLibs.srcDirs += "src/main/jniLibs"
     }
     publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
+        singleVariant("aar") 
     }
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.findByName("release")
+publishing {
+    repositories {
+        mavenLocal() // ~/.m2/respository
+        // maven {
+        //     name = "quickjs"
+        //     url = uri("https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs")
+        //     credentials {
+        //         username = System.getenv("GITHUB_ACTOR") || Prop("GITHUB_ACTOR")
+        //         password = System.getenv("GITHUB_TOKEN") || Prop("GITHUB_TOKEN")
+        //     }
+        // }
+        // build dir
+        maven {
+            name = 'myrepo'
+            url = layout.buildDirectory.dir('repo')
+        }
+    }
+    publications {
+        aar(MavenPublication) {
+            groupId = Prop('GROUP')
+            artifactId = Prop('POM_ARTIFACT_ID')
+            version = Prop('VERSION_NAME')
+            
+            def aarDir = project.file("${project.buildDir}/outputs/aar/")
+            def aarFiles = aarDir.listFiles().findAll { it.name.endsWith('release.aar') }.collect { it.absolutePath }
+            println("🌹 ${aarFiles}, ${artifacts}")
+            artifacts = aarFiles
 
-                groupId = "cn.humphreyd.flujs"
-                artifactId = "quickjs"
-                version = "0.6.1"
-
-                pom {
-                    name = "quickjs"
-                    description = "quickjs-ng for flujs."
-                    url = "https://github.com/flutter-flujs/flujs_android_quickjs"
-                    licenses {
-                        license {
-                            name = "The Apache License, Version 2.0"
-                            url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                        }
+            pom {
+                name = Prop('POM_NAME')
+                description = Prop('POM_DESCRIPTION')
+                url = Prop('POM_URL')
+                licenses {
+                    license {
+                        name = Prop('POM_LICENSE_NAME')
+                        url = Prop('POM_LICENSE_URL')
                     }
                     developers {
                         developer {
-                            id = "dang8080@qq.com"
-                            name = "ShuttleSpace"
-                            email = "dang8080@qq.com"
+                            id = Prop('POM_DEVELOPER_ID')
+                            name = Prop('POM_DEVELOPER_NAME')
+                            email = Prop('POM_DEVELOPER_EMAIL')
                         }
                     }
                     scm {
-                        connection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
-                        developerConnection = "scm:git:https://github.com/flutter-flujs/flujs_android_quickjs.git"
-                        url = "https://github.com/flutter-flujs/flujs_android_quickjs"
+                        connection = Prop('POM_SCM_CONNECTION')
+                        developerConnection = Prop('POM_SCM_DEV_CONNECTION')
+                        url = Prop('POM_SCM_URL')
                     }
                 }
             }
         }
     }
 }
-publishing {
-    repositories {
-        maven {
-            name = "quickjs"
-            url = uri("https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
+
+def artifactName(flavor, version) {
+    return "flujs-quickjs-${flavor}-${version}.aar"
+}
+
+mavenPublishing {
+    pomFromGradleProperties()
+    // configure(new AndroidMultiVariantLibrary(true, true, ['release'] as Set, ['abi': ['arm', 'x86'] as Set] as Map))
+     configure(new AndroidSingleVariantLibrary("release", false, false))
+    signAllPublications()
 }
