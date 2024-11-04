@@ -57,14 +57,14 @@ android {
 publishing {
     repositories {
         mavenLocal() // ~/.m2/respository
-        // maven {
-        //     name = "quickjs"
-        //     url = uri("https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs")
-        //     credentials {
-        //         username = System.getenv("GITHUB_ACTOR") || Prop("GITHUB_ACTOR")
-        //         password = System.getenv("GITHUB_TOKEN") || Prop("GITHUB_TOKEN")
-        //     }
-        // }
+        maven {
+            name = "quickjs"
+            url = uri("https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") || Prop("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN") || Prop("GITHUB_TOKEN")
+            }
+        }
         // build dir
         maven {
             name = 'myrepo'
