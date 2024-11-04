@@ -115,7 +115,8 @@ def artifactName(flavor, version) {
 
 mavenPublishing {
     pomFromGradleProperties()
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
     // configure(new AndroidMultiVariantLibrary(true, true, ['release'] as Set, ['abi': ['arm', 'x86'] as Set] as Map))
-     configure(new AndroidSingleVariantLibrary("release", false, false))
+    configureBasedOnAppliedPlugins( false, false)
     signAllPublications()
 }
