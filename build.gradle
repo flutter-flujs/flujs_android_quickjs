@@ -1,8 +1,8 @@
 import com.vanniktech.maven.publish.SonatypeHost
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 
-def Prop(name) {
-    return project.providers.gradleProperty(name) || System.getenv(name)
+def Prop(String name, String defaultValue = null) {
+    return project.findProperty(name) ?: System.getenv(name) ?: defaultValue
 }
 
 def artifactName(flavor, version) {
