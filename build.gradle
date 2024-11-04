@@ -2,7 +2,11 @@ import com.vanniktech.maven.publish.SonatypeHost
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 
 def Prop(name) {
-    return project.providers.gradleProperty(name)
+    return project.providers.gradleProperty(name) || System.getenv(name)
+}
+
+def artifactName(flavor, version) {
+    return "flujs-quickjs-${flavor}-${version}.aar"
 }
 
 group Prop("GROUP")
@@ -61,8 +65,8 @@ publishing {
             name = "quickjs"
             url = uri("https://maven.pkg.github.com/flutter-flujs/flujs_android_quickjs")
             credentials {
-                username = System.getenv("GITHUB_ACTOR") || Prop("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN") || Prop("GITHUB_TOKEN")
+                username = Prop("GITHUB_ACTOR")
+                password = Prop("GITHUB_TOKEN")
             }
         }
         // build dir
@@ -109,9 +113,7 @@ publishing {
     }
 }
 
-def artifactName(flavor, version) {
-    return "flujs-quickjs-${flavor}-${version}.aar"
-}
+
 
 mavenPublishing {
     pomFromGradleProperties()
