@@ -36,6 +36,7 @@ rootProject.allprojects {
 
 apply plugin: "com.android.library"
 apply plugin: "maven-publish"
+apply plugin: "signing"
 apply plugin: "com.vanniktech.maven.publish.base"
 
 android {
@@ -113,7 +114,13 @@ publishing {
     }
 }
 
-
+signing {
+    useInMemoryPgpKeys(
+        Prop("ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY"),
+        Prop("ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD")
+    )
+    sign publishing.publications.aar
+}
 
 mavenPublishing {
     pomFromGradleProperties()
